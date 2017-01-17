@@ -4,14 +4,15 @@ package martinflambard.androidmiaou2;
  * Created by wilfi on 13/01/2017.
  */
 
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -24,28 +25,29 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Login extends AppCompatActivity {
-    TextView register;
-    EditText username, password;
-    Button loginButton;
-    String user, pass;
+public class Login extends Fragment {
+
+    private EditText username, password;
+    private Button loginButton;
+    private String user, pass;
+
+    public Login() {
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+    }
 
-        register = (TextView)findViewById(R.id.register);
-        username = (EditText)findViewById(R.id.username);
-        password = (EditText)findViewById(R.id.password);
-        loginButton = (Button)findViewById(R.id.loginButton);
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
 
-        register.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(Login.this, Register.class));
-            }
-        });
+        final View loginView = inflater.inflate(R.layout.activity_login, container, false);
+
+        username = (EditText)loginView.findViewById(R.id.username);
+        password = (EditText)loginView.findViewById(R.id.password);
+        loginButton = (Button)loginView.findViewById(R.id.loginButton);
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,7 +63,7 @@ public class Login extends AppCompatActivity {
                 }
                 else{
                     String url = "https://androidmiaou-b586c.firebaseio.com/users.json";
-                    final ProgressDialog pd = new ProgressDialog(Login.this);
+                    final ProgressDialog pd = new ProgressDialog(getActivity());
                     pd.setMessage("Loading...");
                     pd.show();
 
@@ -69,22 +71,22 @@ public class Login extends AppCompatActivity {
                         @Override
                         public void onResponse(String s) {
                             if(s.equals("null")){
-                                Toast.makeText(Login.this, "user not found", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getActivity(), "user not found", Toast.LENGTH_LONG).show();
                             }
                             else{
                                 try {
                                     JSONObject obj = new JSONObject(s);
 
                                     if(!obj.has(user)){
-                                        Toast.makeText(Login.this, "user not found", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(getActivity(), "user not found", Toast.LENGTH_LONG).show();
                                     }
                                     else if(obj.getJSONObject(user).getString("password").equals(pass)){
                                         UserDetails.username = user;
                                         UserDetails.password = pass;
-                                        startActivity(new Intent(Login.this, Users.class));
+                                        startActivity(new Intent(getActivity(), Users.class));
                                     }
                                     else {
-                                        Toast.makeText(Login.this, "incorrect password", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(getActivity(), "incorrect password", Toast.LENGTH_LONG).show();
                                     }
                                 } catch (JSONException e) {
                                     e.printStackTrace();
@@ -101,11 +103,13 @@ public class Login extends AppCompatActivity {
                         }
                     });
 
-                    RequestQueue rQueue = Volley.newRequestQueue(Login.this);
+                    RequestQueue rQueue = Volley.newRequestQueue(getActivity());
                     rQueue.add(request);
                 }
 
             }
         });
+
+        return loginView;
     }
 }

@@ -6,9 +6,12 @@ package martinflambard.androidmiaou2;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -25,18 +28,30 @@ import com.firebase.client.Firebase;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Register extends AppCompatActivity {
+public class Register extends Fragment {
     EditText username, password;
     Button registerButton;
     String user, pass;
     TextView login;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register);
+    public Register() {
+    }
 
-        username = (EditText)findViewById(R.id.username);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        final View registerView = inflater.inflate(R.layout.activity_register, container, false);
+
+        return registerView;
+    }
+
+        /*username = (EditText)findViewById(R.id.username);
         password = (EditText)findViewById(R.id.password);
         registerButton = (Button)findViewById(R.id.registerButton);
         login = (TextView)findViewById(R.id.login);
@@ -120,6 +135,5 @@ public class Register extends AppCompatActivity {
                     rQueue.add(request);
                 }
             }
-        });
-    }
+        });*/
 }
