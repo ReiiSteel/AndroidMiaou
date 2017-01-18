@@ -40,6 +40,7 @@ public class Register extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Firebase.setAndroidContext(getActivity());
     }
 
     @Override
@@ -48,22 +49,9 @@ public class Register extends Fragment {
 
         final View registerView = inflater.inflate(R.layout.activity_register, container, false);
 
-        return registerView;
-    }
-
-        /*username = (EditText)findViewById(R.id.username);
-        password = (EditText)findViewById(R.id.password);
-        registerButton = (Button)findViewById(R.id.registerButton);
-        login = (TextView)findViewById(R.id.login);
-
-        Firebase.setAndroidContext(this);
-
-        login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(Register.this, Login.class));
-            }
-        });
+        username = (EditText) registerView.findViewById(R.id.username);
+        password = (EditText) registerView.findViewById(R.id.password);
+        registerButton = (Button) registerView.findViewById(R.id.registerButton);
 
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,22 +75,22 @@ public class Register extends Fragment {
                     password.setError("at least 5 characters long");
                 }
                 else {
-                    final ProgressDialog pd = new ProgressDialog(Register.this);
+                    final ProgressDialog pd = new ProgressDialog(getActivity());
                     pd.setMessage("Loading...");
                     pd.show();
 
                     String url = "https://androidmiaou-b586c.firebaseio.com/users.json";
-                    Toast.makeText(Register.this, "Before request", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "Before request", Toast.LENGTH_LONG).show();
                     StringRequest request = new StringRequest(Request.Method.GET, url, new Response.Listener<String>(){
 
                         @Override
                         public void onResponse(String s) {
-                            Toast.makeText(Register.this, "After request" + s, Toast.LENGTH_LONG).show();
+                            Toast.makeText(getActivity(), "After request" + s, Toast.LENGTH_LONG).show();
                             Firebase reference = new Firebase("https://androidmiaou-b586c.firebaseio.com/users");
 
                             if(s.equals("null")) {
                                 reference.child(user).child("password").setValue(pass);
-                                Toast.makeText(Register.this, "registration successful", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getActivity(), "registration successful", Toast.LENGTH_LONG).show();
                             }
                             else {
                                 try {
@@ -110,9 +98,9 @@ public class Register extends Fragment {
 
                                     if (!obj.has(user)) {
                                         reference.child(user).child("password").setValue(pass);
-                                        Toast.makeText(Register.this, "registration successful", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(getActivity(), "registration successful", Toast.LENGTH_LONG).show();
                                     } else {
-                                        Toast.makeText(Register.this, "username already exists", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(getActivity(), "username already exists", Toast.LENGTH_LONG).show();
                                     }
 
                                 } catch (JSONException e) {
@@ -131,9 +119,12 @@ public class Register extends Fragment {
                         }
                     });
 
-                    RequestQueue rQueue = Volley.newRequestQueue(Register.this);
+                    RequestQueue rQueue = Volley.newRequestQueue(getActivity());
                     rQueue.add(request);
                 }
             }
-        });*/
+        });
+
+        return registerView;
+    }
 }

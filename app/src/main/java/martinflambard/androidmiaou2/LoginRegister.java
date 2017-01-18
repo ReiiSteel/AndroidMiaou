@@ -1,18 +1,30 @@
 package martinflambard.androidmiaou2;
 
+import android.app.Fragment;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 public class LoginRegister extends AppCompatActivity {
 
+    private Toolbar toolbar;
+    private Button login_register_switch;
     private boolean inLogin;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_register);
+
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setBackgroundResource(R.mipmap.polygon);
+        toolbar.setTitle(R.string.app_name);
+        setSupportActionBar(toolbar);
+
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.login_register_container, new Login())
@@ -25,31 +37,33 @@ public class LoginRegister extends AppCompatActivity {
         super.onResume();
 
         setInLogin(true);
-        final TextView login_register_switch = (TextView)findViewById(R.id.login_register_switch);
-        login_register_switch.setText(R.string.register);
+        login_register_switch = (Button)findViewById(R.id.login_register_switch);
+        login_register_switch.setText(R.string.goToRegister);
         login_register_switch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                chargeLoginOrRegister(inLogin, login_register_switch);
+                chargeLoginOrRegister();
             }
         });
     }
 
 
-    private void setInLogin(boolean value){
-        this.inLogin = value;
-    }
+    private void setInLogin(boolean value){this.inLogin = value;}
+    private boolean getInLogin(){return this.inLogin;}
 
-    private void chargeLoginOrRegister(boolean inLogin, TextView login_register_switch){
-        if (inLogin){
-            login_register_switch.setText(R.string.login);
+    private Button getLoginRegisterSwitch(){return this.login_register_switch;}
+
+
+    private void chargeLoginOrRegister(){
+        if (getInLogin()){
+            getLoginRegisterSwitch().setText(R.string.goToLogin);
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.login_register_container, new Register())
                     .commit();
             setInLogin(false);
         }
         else{
-            login_register_switch.setText(R.string.register);
+            getLoginRegisterSwitch().setText(R.string.goToRegister);
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.login_register_container, new Login())
                     .commit();
@@ -57,4 +71,5 @@ public class LoginRegister extends AppCompatActivity {
         }
     }
 
+    //Firebase.setAndroidContext(this);
 }

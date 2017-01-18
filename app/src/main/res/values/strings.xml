@@ -2,4 +2,9 @@
     <string name="app_name">AndroidMiaou2</string>
     <string name="login">Login</string>
     <string name="register">Register</string>
+    <string name="goToLogin">Or Login</string>
+    <string name="goToRegister">Or Register</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="contacts">Contacts</string>
 </resources>
