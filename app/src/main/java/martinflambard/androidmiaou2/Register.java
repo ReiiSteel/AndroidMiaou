@@ -31,6 +31,7 @@ import org.json.JSONObject;
 public class Register extends Fragment {
     EditText username, password;
     Button registerButton;
+    Button goToLoginButton;
     String user, pass;
     TextView login;
 
@@ -52,6 +53,7 @@ public class Register extends Fragment {
         username = (EditText) registerView.findViewById(R.id.username);
         password = (EditText) registerView.findViewById(R.id.password);
         registerButton = (Button) registerView.findViewById(R.id.registerButton);
+        goToLoginButton = (Button) registerView.findViewById(R.id.goToLoginButton);
 
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,6 +124,15 @@ public class Register extends Fragment {
                     RequestQueue rQueue = Volley.newRequestQueue(getActivity());
                     rQueue.add(request);
                 }
+            }
+        });
+
+        goToLoginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.login_register_container, new Login())
+                        .commit();
             }
         });
 

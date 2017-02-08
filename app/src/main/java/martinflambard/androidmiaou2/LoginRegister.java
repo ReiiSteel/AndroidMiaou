@@ -12,7 +12,7 @@ import android.widget.TextView;
 public class LoginRegister extends AppCompatActivity {
 
     private Toolbar toolbar;
-    private Button login_register_switch;
+    //private Button login_register_switch;
     private boolean inLogin;
 
     @Override
@@ -36,7 +36,7 @@ public class LoginRegister extends AppCompatActivity {
     public void onResume() {
         super.onResume();
 
-        setInLogin(true);
+        /*setInLogin(true);
         login_register_switch = (Button)findViewById(R.id.login_register_switch);
         login_register_switch.setText(R.string.goToRegister);
         login_register_switch.setOnClickListener(new View.OnClickListener() {
@@ -44,17 +44,17 @@ public class LoginRegister extends AppCompatActivity {
             public void onClick(View v) {
                 chargeLoginOrRegister();
             }
-        });
+        });*/
     }
 
 
     private void setInLogin(boolean value){this.inLogin = value;}
     private boolean getInLogin(){return this.inLogin;}
 
-    private Button getLoginRegisterSwitch(){return this.login_register_switch;}
+    //private Button getLoginRegisterSwitch(){return this.login_register_switch;}
 
 
-    private void chargeLoginOrRegister(){
+    /*private void chargeLoginOrRegister(){
         if (getInLogin()){
             getLoginRegisterSwitch().setText(R.string.goToLogin);
             getSupportFragmentManager().beginTransaction()
@@ -69,7 +69,7 @@ public class LoginRegister extends AppCompatActivity {
                     .commit();
             setInLogin(true);
         }
-    }
+    }*/
 
     //Firebase.setAndroidContext(this);
 }

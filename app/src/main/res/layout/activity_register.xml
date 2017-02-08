@@ -46,4 +46,12 @@
         android:backgroundTint="@color/red500"
         android:textColor="@color/white" />
 
+    <Button
+        android:text="@string/goToLogin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/goToLoginButton"
+        style="@android:style/Widget.Material.Button.Borderless"
+        android:layout_gravity="center_horizontal" />
+
 </LinearLayout>

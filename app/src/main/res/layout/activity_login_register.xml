@@ -28,14 +28,4 @@
         android:id="@+id/login_register_container">
     </FrameLayout>
 
-    <Button
-        android:text="Or register"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/login_register_switch"
-        style="@android:style/Widget.DeviceDefault.Button.Borderless"
-        android:fontFamily="sans-serif-medium"
-        android:padding="12dp"
-        android:layout_gravity="center_horizontal" />
-
 </LinearLayout>

@@ -29,6 +29,7 @@ public class Login extends Fragment {
 
     private EditText username, password;
     private Button loginButton;
+    private Button goToRegisterButton;
     private String user, pass;
 
     public Login() {
@@ -48,6 +49,7 @@ public class Login extends Fragment {
         username = (EditText)loginView.findViewById(R.id.username);
         password = (EditText)loginView.findViewById(R.id.password);
         loginButton = (Button)loginView.findViewById(R.id.loginButton);
+        goToRegisterButton = (Button)loginView.findViewById(R.id.goToRegisterButton);
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -107,6 +109,15 @@ public class Login extends Fragment {
                     rQueue.add(request);
                 }
 
+            }
+        });
+
+        goToRegisterButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.login_register_container, new Register())
+                        .commit();
             }
         });
 
