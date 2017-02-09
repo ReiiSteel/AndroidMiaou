@@ -6,53 +6,36 @@ package martinflambard.androidmiaou2;
 
         import android.content.Intent;
         import android.graphics.Bitmap;
-        import android.graphics.BitmapFactory;
-        import android.graphics.Color;
-        import android.graphics.Path;
-        import android.graphics.Typeface;
-        import android.os.SystemClock;
         import android.provider.MediaStore;
         import android.support.v7.app.AppCompatActivity;
         import android.os.Bundle;
+        import android.support.v7.widget.LinearLayoutManager;
+        import android.support.v7.widget.RecyclerView;
         import android.support.v7.widget.Toolbar;
-        import android.text.Layout;
-        import android.util.Base64;
-        import android.view.Gravity;
-        import android.view.LayoutInflater;
         import android.view.Menu;
         import android.view.MenuItem;
-        import android.view.MotionEvent;
         import android.view.View;
-        import android.view.ViewGroup;
         import android.widget.EditText;
-        import android.widget.FrameLayout;
         import android.widget.ImageView;
-        import android.widget.LinearLayout;
-        import android.widget.ScrollView;
-        import android.widget.TextView;
-
         import com.firebase.client.ChildEventListener;
         import com.firebase.client.DataSnapshot;
         import com.firebase.client.Firebase;
         import com.firebase.client.FirebaseError;
-        import com.firebase.client.collection.LLRBNode;
+        import com.firebase.client.realtime.util.StringListReader;
 
-        import java.io.ByteArrayOutputStream;
-        import java.util.Calendar;
         import java.util.HashMap;
         import java.util.Map;
-
-        import static android.R.attr.defaultHeight;
-        import static android.R.attr.type;
-        import static android.R.id.message;
-        import static android.support.v7.widget.AppCompatDrawableManager.get;
+        import static martinflambard.androidmiaou2.FonctionUtils.BitmapToString;
+        import static martinflambard.androidmiaou2.FonctionUtils.Timestamp;
 
 public class Chat extends AppCompatActivity {
     private Toolbar toolbar;
-    LinearLayout layout;
     ImageView sendButton;
     EditText messageArea;
-    ScrollView scrollView;
+    RecyclerView recyclerView;
+    LinearLayoutManager linearLayoutManager;
+    MessageRecyclerAdapter messageRecyclerAdapter;
+
     Firebase reference1, reference2;
     static final int REQUEST_IMAGE_CAPTURE = 1;
 
@@ -65,11 +48,13 @@ public class Chat extends AppCompatActivity {
         toolbar.setBackgroundResource(R.mipmap.polygon);
         toolbar.setTitle("Chating with "+UserDetails.chatWith);
         setSupportActionBar(toolbar);
-
-        layout = (LinearLayout)findViewById(R.id.layout1);
         sendButton = (ImageView)findViewById(R.id.sendButton);
         messageArea = (EditText)findViewById(R.id.messageArea);
-        scrollView = (ScrollView)findViewById(R.id.scrollView);
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        linearLayoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(linearLayoutManager);
+        messageRecyclerAdapter = new MessageRecyclerAdapter();
+        recyclerView.setAdapter(messageRecyclerAdapter);
 
         Firebase.setAndroidContext(this);
         reference1 = new Firebase("https://androidmiaou-b586c.firebaseio.com/messages/" + UserDetails.username + "_" + UserDetails.chatWith);
@@ -82,10 +67,11 @@ public class Chat extends AppCompatActivity {
                 String messageText = messageArea.getText().toString();
 
                 if(!messageText.equals("")){
+                    //Message msg = new Message(messageText, Timestamp(), MessageType.TEXT, UserDetails.username);
                     Map<String, String> map = new HashMap<String, String>();
                     map.put("message", messageText);
                     map.put("timestamp", Timestamp());
-                    map.put("type", "text");
+                    map.put("type", String.valueOf(MessageType.TEXT));
                     map.put("user", UserDetails.username);
                     reference1.push().setValue(map);
                     reference2.push().setValue(map);
@@ -98,27 +84,10 @@ public class Chat extends AppCompatActivity {
         reference1.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Map map = dataSnapshot.getValue(Map.class);
-                String message = map.get("message").toString();
-                String userName = map.get("user").toString();
-                String timestamp = "";
-                String type = "text";
-                if(map.size()>2){timestamp = map.get("timestamp").toString();}
-                if(map.size()>3){type = map.get("type").toString();}
-                if(userName.equals(UserDetails.username)){
-                    //addMessageBox("You:-\n" + message, 1);
-                    if (type.equals("text"))
-                        addMessageBox(message, timestamp, true);
-                    if (type.equals("photo"))
-                        addPhotoBox(StringToBitMap(message), timestamp, true);
-                }
-                else{
-                    //addMessageBox(UserDetails.chatWith + ":-\n" + message, 2);
-                    if (type.equals("text"))
-                        addMessageBox(message, timestamp, false);
-                    if (type.equals("photo"))
-                        addPhotoBox(StringToBitMap(message), timestamp, false);
-                }
+                //Message msg = dataSnapshot.getValue(Message.class);
+                Map<String, String> map = dataSnapshot.getValue(Map.class);
+                messageRecyclerAdapter.addItem(new Message(map.get("message").toString(), map.get("timestamp").toString(), Integer.parseInt(map.get("type").toString()), map.get("user").toString()));
+                messageRecyclerAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -146,12 +115,7 @@ public class Chat extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        scrollView.post(new Runnable() {
-            @Override
-            public void run() {
-                scrollView.fullScroll(View.FOCUS_DOWN);
-            }
-        });
+        recyclerView.scrollToPosition(messageRecyclerAdapter.getItemCount()-1);
     }
 
     @Override
@@ -185,22 +149,16 @@ public class Chat extends AppCompatActivity {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
             Map<String, String> map = new HashMap<String, String>();
-            map.put("message", BitMapToString(imageBitmap));
+            map.put("message", BitmapToString(imageBitmap));
             map.put("timestamp", Timestamp());
-            map.put("type", "photo");
+            map.put("type", String.valueOf(MessageType.PHOTO));
             map.put("user", UserDetails.username);
             reference1.push().setValue(map);
             reference2.push().setValue(map);
         }
     }
 
-    private String Timestamp(){
-        Calendar cal = Calendar.getInstance();
-        String ret = cal.get(Calendar.DAY_OF_MONTH)+"/"+(cal.get(Calendar.MONTH)+1)+"/"+cal.get(Calendar.YEAR)+" "+cal.get(Calendar.HOUR_OF_DAY)+":"+cal.get(Calendar.MINUTE);
-        return ret;
-    }
-
-    public void addMessageBox(String message, String timestamp, boolean fromSelf){
+    /*public void addMessageBox(String message, String timestamp, boolean fromSelf){
         TextView messageView = new TextView(Chat.this);
         messageView.setText(message);
         messageView.setTextColor(Color.BLACK);
@@ -233,9 +191,9 @@ public class Chat extends AppCompatActivity {
                 scrollView.fullScroll(View.FOCUS_DOWN);
             }
         });
-    }
+    }*/
 
-    public void addPhotoBox(Bitmap imageBitmap, String timestamp, boolean fromSelf){
+    /*public void addPhotoBox(Bitmap imageBitmap, String timestamp, boolean fromSelf){
         ImageView imageView = new ImageView(Chat.this);
         imageView.setImageBitmap(imageBitmap);
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
@@ -269,24 +227,5 @@ public class Chat extends AppCompatActivity {
                 scrollView.fullScroll(View.FOCUS_DOWN);
             }
         });
-    }
-
-    public String BitMapToString(Bitmap bitmap){
-        ByteArrayOutputStream baos=new  ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG,100, baos);
-        byte [] b=baos.toByteArray();
-        String temp=Base64.encodeToString(b, Base64.DEFAULT);
-        return temp;
-    }
-
-    public Bitmap StringToBitMap(String encodedString){
-        try {
-            byte [] encodeByte=Base64.decode(encodedString,Base64.DEFAULT);
-            Bitmap bitmap= BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
-            return bitmap;
-        } catch(Exception e) {
-            e.getMessage();
-            return null;
-        }
-    }
+    }*/
 }
