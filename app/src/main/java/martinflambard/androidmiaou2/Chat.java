@@ -4,12 +4,16 @@ package martinflambard.androidmiaou2;
  * Created by wilfi on 13/01/2017.
  */
 
+        import android.content.Context;
         import android.content.Intent;
         import android.graphics.Bitmap;
         import android.graphics.BitmapFactory;
         import android.graphics.Color;
         import android.graphics.Path;
         import android.graphics.Typeface;
+        import android.location.Criteria;
+        import android.location.Location;
+        import android.location.LocationManager;
         import android.os.SystemClock;
         import android.provider.MediaStore;
         import android.support.v7.app.AppCompatActivity;
@@ -36,6 +40,9 @@ package martinflambard.androidmiaou2;
         import com.firebase.client.Firebase;
         import com.firebase.client.FirebaseError;
         import com.firebase.client.collection.LLRBNode;
+        import com.google.maps.GeoApiContext;
+        import com.google.maps.GeocodingApi;
+        import com.google.maps.model.GeocodingResult;
 
         import java.io.ByteArrayOutputStream;
         import java.util.Calendar;
@@ -184,6 +191,7 @@ public class Chat extends AppCompatActivity {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
+
             Map<String, String> map = new HashMap<String, String>();
             map.put("message", BitMapToString(imageBitmap));
             map.put("timestamp", Timestamp());

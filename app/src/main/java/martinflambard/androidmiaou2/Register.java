@@ -34,6 +34,7 @@ public class Register extends Fragment {
     Button goToLoginButton;
     String user, pass;
     TextView login;
+    // AIzaSyDagkXxYqjPOe30V-X1AHvfdiuBalY6NZM
 
     public Register() {
     }
@@ -82,17 +83,20 @@ public class Register extends Fragment {
                     pd.show();
 
                     String url = "https://androidmiaou-b586c.firebaseio.com/users.json";
-                    Toast.makeText(getActivity(), "Before request", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getActivity(), "Before request", Toast.LENGTH_LONG).show();
                     StringRequest request = new StringRequest(Request.Method.GET, url, new Response.Listener<String>(){
 
                         @Override
                         public void onResponse(String s) {
-                            Toast.makeText(getActivity(), "After request" + s, Toast.LENGTH_LONG).show();
+                            //Toast.makeText(getActivity(), "After request" + s, Toast.LENGTH_LONG).show();
                             Firebase reference = new Firebase("https://androidmiaou-b586c.firebaseio.com/users");
 
                             if(s.equals("null")) {
                                 reference.child(user).child("password").setValue(pass);
                                 Toast.makeText(getActivity(), "registration successful", Toast.LENGTH_LONG).show();
+                                getActivity().getSupportFragmentManager().beginTransaction()
+                                        .replace(R.id.login_register_container, new Login())
+                                        .commit();
                             }
                             else {
                                 try {
@@ -101,6 +105,9 @@ public class Register extends Fragment {
                                     if (!obj.has(user)) {
                                         reference.child(user).child("password").setValue(pass);
                                         Toast.makeText(getActivity(), "registration successful", Toast.LENGTH_LONG).show();
+                                        getActivity().getSupportFragmentManager().beginTransaction()
+                                                .replace(R.id.login_register_container, new Login())
+                                                .commit();
                                     } else {
                                         Toast.makeText(getActivity(), "username already exists", Toast.LENGTH_LONG).show();
                                     }
